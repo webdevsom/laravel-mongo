@@ -17,5 +17,6 @@ class CampaignMedia extends Model
         'destination_url',
         'script',
         'size',
+        'active_flag',
     ];
 }

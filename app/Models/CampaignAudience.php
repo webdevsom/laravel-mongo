@@ -17,5 +17,6 @@ class CampaignAudience extends Model
         'max_age',
         'educations',
         'occupations',
+        'active_flag',
     ];
 }

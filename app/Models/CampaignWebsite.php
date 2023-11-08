@@ -14,5 +14,6 @@ class CampaignWebsite extends Model
     protected $fillable = [
         'url',
         'type',
+        'active_flag',
     ];
 }

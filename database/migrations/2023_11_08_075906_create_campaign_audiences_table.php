@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('campaign_audiences', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('campaign_id')->constrained()->nullOnDelete();
             $table->enum('gender', ['Male', 'Female', 'Others']);
             $table->smallInteger('min_age')->nullable();
             $table->smallInteger('max_age')->nullable();
             $table->json('educations')->nullable();
             $table->json('occupations')->nullable();
+            $table->boolean('active_flag')->index()->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

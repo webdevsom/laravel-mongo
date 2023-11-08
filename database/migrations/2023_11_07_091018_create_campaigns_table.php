@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            // bid details
             $table->string('campaign_type')->index();
             $table->boolean('is_duration_continues')->default(true);
             $table->date('start_date')->nullable();
@@ -26,7 +25,7 @@ return new class extends Migration
             $table->string('budget_type');
             $table->string('budget_currency')->default('USD');
             $table->string('budget');
-            
+            $table->boolean('active_flag')->index()->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Api\V1\Campaign;
 
 use App\Http\Controllers\Controller;
+use App\Services\CampaignService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class CampaignController extends Controller
 {
@@ -17,10 +21,25 @@ class CampaignController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request, CampaignService $campaignService): JsonResponse
     {
-        //
+        try {
+            $validator = Validator::make($request->all(), $campaignService->validation());
+
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+
+            $campaignService = $campaignService->create($request->all());
+
+            return $this->sendSuccess($request->all());
+        } catch (Throwable $th) {
+            return $this->sendError([]);
+        }
     }
 
     /**

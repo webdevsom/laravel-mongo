@@ -16,5 +16,6 @@ class CampaignLocation extends Model
         'state',
         'country',
         'type',
+        'active_flag',
     ];
 }

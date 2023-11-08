@@ -14,5 +14,6 @@ class CampaignCategory extends Model
     protected $fillable = [
         'name',
         'type',
+        'active_flag',
     ];
 }

@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('campaign_websites', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('campaign_id')->constrained()->nullOnDelete();
             $table->string('url');
             $table->enum('type', ['All', 'Include', 'Exclude']);
+            $table->boolean('active_flag')->index()->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('campaign_id')->constrained()->nullOnDelete();
             $table->string('name');
-            $table->enum('type', ['browser', 'device']);
+            $table->enum('type', ['Browser', 'Device']);
+            $table->boolean('active_flag')->index()->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('campaign_media', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('campaign_id')->constrained()->nullOnDelete();
             $table->string('name'); 
             $table->string('url'); 
             $table->string('destination_url')->nullable();
             $table->text('script')->nullable();
             $table->string('size')->nullable();
+            $table->boolean('active_flag')->index()->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

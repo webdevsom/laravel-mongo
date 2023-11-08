@@ -14,5 +14,6 @@ class CampaignDevice extends Model
     protected $fillable = [
         'name',
         'type',
+        'active_flag',
     ];
 }
