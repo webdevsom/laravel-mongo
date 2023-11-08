@@ -16,8 +16,19 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            // $table->foreignId('user_id')->constrained()->nullOnDelete();
+            // bid details
+            $table->string('campaign_type')->index();
+            $table->boolean('is_duration_continues')->default(true);
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->string('frequency_type');
+            $table->string('frequency')->nullable();
+            $table->string('budget_type');
+            $table->string('budget_currency')->default('USD');
+            $table->string('budget');
+            
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

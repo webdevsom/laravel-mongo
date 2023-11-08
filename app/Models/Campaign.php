@@ -14,5 +14,14 @@ class Campaign extends Model
     protected $fillable = [
         'name',
         'description',
+        'campaign_type',
+        'is_duration_continues',
+        'start_date',
+        'end_date',
+        'frequency_type',
+        'frequency',
+        'budget_type',
+        'budget_currency',
+        'budget',
     ];
 }
