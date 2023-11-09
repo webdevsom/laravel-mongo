@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\Campaign\{
     CampaignController,
+    PreCampaignController,
 };
 /*
 |--------------------------------------------------------------------------
@@ -21,5 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix'=> 'campaigns', 'as' => 'campaigns.'], function () {
+    Route::get('get-form-data', [PreCampaignController::class, 'getFormData'])->name('getFormData');
     Route::post('create', [CampaignController::class, 'store'])->name('create');
 });
