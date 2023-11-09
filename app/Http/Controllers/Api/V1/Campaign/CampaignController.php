@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CampaignService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
 
@@ -28,16 +29,18 @@ class CampaignController extends Controller
     public function store(Request $request, CampaignService $campaignService): JsonResponse
     {
         try {
+            DB::beginTransaction();
             $validator = Validator::make($request->all(), $campaignService->validation());
 
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
 
-            $campaignService = $campaignService->create($request->all());
-
-            return $this->sendSuccess($request->all());
+            $data = $campaignService->create($request->all());
+            DB::commit();
+            return $this->sendSuccess($data);
         } catch (Throwable $th) {
+            DB::rollBack();
             return $this->sendError([]);
         }
     }

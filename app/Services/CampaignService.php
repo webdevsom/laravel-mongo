@@ -33,14 +33,23 @@ class CampaignService
 
         $campaign = Campaign::create($campaignData);
 
-        $audienceData = $data->only(['gender', 'min_age', 'max_age', 'educations', 'occupations',])->toArray();
-        $categoryData = $data->only(['name', 'type',])->toArray();
-        $deviceData = $data->only(['name', 'type',])->toArray();
-        $locationData = $data->only(['city', 'state', 'country', 'type',])->toArray();
-        $mediaData = $data->only(['name', 'url', 'destination_url', 'script', 'size',])->toArray();
-        $websiteData = $data->only(['url', 'type',])->toArray();
+        $audienceData = collect($data['audiences'] ?? [])->only(['gender', 'min_age', 'max_age', 'educations', 'occupations',])->toArray();
+        $categoryData = collect($data['categories'] ?? [])->only(['name', 'type',])->toArray();
+        $deviceData = collect($data['devices'] ?? [])->only(['name', 'type',])->toArray();
+        $browserData = collect($data['browsers'] ?? [])->only(['name', 'type',])->toArray();
+        $locationData = collect($data['locations'] ?? [])->only(['city', 'state', 'country', 'type',])->toArray();
+        // $mediaData = collect($data['media'] ?? [])->only(['name', 'url', 'destination_url', 'script', 'size',])->toArray();
+        $websiteData = collect($data['websites'] ?? [])->only(['url', 'type',])->toArray();
 
-        return [];
+        $campaign->audiences()->create($audienceData);
+        $campaign->categories()->create($categoryData);
+        $campaign->devices()->create($deviceData);
+        $campaign->browsers()->create($browserData);
+        $campaign->locations()->create($locationData);
+        // $campaign->media()->create($audienceData);
+        $campaign->websites()->create($websiteData);
+
+        return ['message' => 'Campaign created.'];
     }
 
     public function validation(): array
