@@ -18,5 +18,11 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        $this->call(CampaignTypeSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(DeviceSeeder::class);
+        $this->call(FrequencySeeder::class);
+        $this->call(MediaSizeSeeder::class);
     }
 }
