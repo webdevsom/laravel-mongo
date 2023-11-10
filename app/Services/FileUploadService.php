@@ -34,7 +34,7 @@ class FileUploadService
     /**
      * default constants used to build file path
      */
-    const UPLOAD_PATH = 'uploads/{user_id}/{type}/{filename}';
+    const UPLOAD_PATH = 'uploads/{folder}/{type}/{filename}';
 
     /**
      * The public visibility setting.
@@ -217,7 +217,7 @@ class FileUploadService
         //  $defaults = [
         //      'disk' => self::$disk, // The disk where the file is being saved.
         //      'safe' => false, // weather or not to use safe client file operators
-        //      'user_id' => 1, // files are grouped by user.
+        //      'folder' => 1, // files are grouped by user.
         //      'path' => self::UPLOAD_PATH, // Where files are being stored.
         //      'visibility' => self::VISIBILITY_PUBLIC, // public | private
         //  ];
@@ -232,7 +232,7 @@ class FileUploadService
 
         $disk = $args['disk'] ?? self::$disk;
 
-        $user_id = $args['user_id'] ?? null;
+        $folder = $args['folder'] ?? 'media';
 
         /**
          * getClientOriginalName() and getClientOriginalExtension() are considered
@@ -259,8 +259,8 @@ class FileUploadService
         //  Get the type of file we are storing
         $type = self::getType($extension);
 
-        // Make a file path where image will be stored [uploads/{user_id}/{type}/{filename}.{ext}]
-        $filePath = self::getUserDir($filenameToStore, $type, (int) $user_id);
+        // Make a file path where image will be stored [uploads/{folder}/{type}/{filename}.{ext}]
+        $filePath = self::getUserDir($filenameToStore, $type, (string) $folder);
 
         // Upload File to storage disk
         $fileContent = fopen($file, 'r+');
@@ -286,18 +286,18 @@ class FileUploadService
             'dimensions' => self::getDimensions($file, $type),
             'path' => $filePath,
             'url' => Storage::disk($disk)->url($filePath),
-            'user_id' => $user_id,
+            'folder' => $folder,
             'disk' => $disk,
             'visibility' => $args['visibility'], // indicate if file is public or private
             'uuid' => Str::uuid()->toString(),
         ];
     }
 
-    protected static function getUser(int $user_id = null): ?int
+    protected static function getUser(int $folder = null): ?int
     {
         $defaults = self::getConfig();
 
-        return $user_id ?? (!empty($defaults['user_id']) ? (int) $defaults['user_id'] : 1);
+        return $folder ?? (!empty($defaults['folder']) ? (int) $defaults['folder'] : 1);
     }
 
     protected static function getDisk(string $disk = null): string
@@ -512,16 +512,16 @@ class FileUploadService
      *
      * @return string Specific user directory
      *
-     * @example uploads/{user_id}/{type}/{filename}
+     * @example uploads/{folder}/{type}/{filename}
      */
-    private static function getUserDir(string $filename, string $type = self::FILE, int $user_id = null): string
+    private static function getUserDir(string $filename, string $type = self::FILE, int $folder = null): string
     {
         $defaults = self::getConfig();
 
         $dir = $defaults['path'] ?? self::UPLOAD_PATH;
 
         return trim(strtr($dir, [
-            '{user_id}' => $user_id,
+            '{folder}' => $folder,
             '{type}' => $type,
             '{filename}' => $filename,
         ]), '/\\');

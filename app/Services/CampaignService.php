@@ -9,7 +9,9 @@ use App\Enums\DeviceEnum;
 use App\Enums\GenderEnum;
 use App\Enums\IncludeStatusEnum;
 use App\Models\Campaign;
+use App\Models\Masters\CampaignType;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
 class CampaignService
@@ -32,24 +34,30 @@ class CampaignService
         ])->toArray();
 
         $campaign = Campaign::create($campaignData);
-
-        $audienceData = collect($data['audiences'] ?? [])->only(['gender', 'min_age', 'max_age', 'educations', 'occupations',])->toArray();
-        $categoryData = collect($data['categories'] ?? [])->only(['name', 'type',])->toArray();
-        $deviceData = collect($data['devices'] ?? [])->only(['name', 'type',])->toArray();
-        $browserData = collect($data['browsers'] ?? [])->only(['name', 'type',])->toArray();
-        $locationData = collect($data['locations'] ?? [])->only(['city', 'state', 'country', 'type',])->toArray();
-        // $mediaData = collect($data['media'] ?? [])->only(['name', 'url', 'destination_url', 'script', 'size',])->toArray();
-        $websiteData = collect($data['websites'] ?? [])->only(['url', 'type',])->toArray();
-
-        $campaign->audiences()->create($audienceData);
-        $campaign->categories()->create($categoryData);
-        $campaign->devices()->create($deviceData);
-        $campaign->browsers()->create($browserData);
-        $campaign->locations()->create($locationData);
-        // $campaign->media()->create($audienceData);
-        $campaign->websites()->create($websiteData);
-
-        return ['message' => 'Campaign created.'];
+        
+        collect($data['audiences'] ?? [])->each(function($item) use ($campaign) {
+            $campaign->audiences()->create($item);
+        });
+        collect($data['categories'] ?? [])->each(function($item) use ($campaign) {
+            $campaign->categories()->create($item);
+        });
+        collect($data['devices'] ?? [])->each(function($item) use ($campaign) {
+            $campaign->devices()->create($item);
+        });
+        collect($data['browsers'] ?? [])->each(function($item) use ($campaign) {
+            $campaign->browsers()->create($item);
+        });
+        collect($data['locations'] ?? [])->each(function($item) use ($campaign) {
+            $campaign->locations()->create($item);
+        });
+        collect($data['websites'] ?? [])->each(function($item) use ($campaign) {
+            $campaign->websites()->create($item);
+        });
+        collect($data['media'] ?? [])->each(function($item) use ($campaign) {
+            $campaign->media()->create($item);
+        });
+        
+        return ['message' => _('Campaign created.')];
     }
 
     public function validation(): array
@@ -57,11 +65,11 @@ class CampaignService
         return [
             'name' => ['required', 'string', 'max:254',],
             'description' => ['required', 'string'],
-            'campaign_type' => ['required', new Enum(CampaignTypeEnum::class)],
+            'campaign_type' => ['required', Rule::exists('campaign_types', 'name')],
             'is_duration_continues' => ['required', 'boolean'],
             'start_date' => ['required', 'date'],
             'end_date' => ['accepted_if:is_duration_continues,false', 'date'],
-            'frequency_type' => ['required', new Enum(CampaignFrequencyEnum::class)],
+            'frequency_type' => ['required', Rule::exists('frequencies', 'name')],
             'frequency' => ['required', 'string', 'max:254',],
             'budget_type' => ['required', new Enum(BudgetTypeEnum::class)],
             'budget' => ['required', 'integer'],
@@ -76,15 +84,15 @@ class CampaignService
             'audiences.*.occupations.*' => ['string'],
             // categories
             'categories' => ['required', 'array'],
-            'categories.*.name' => ['required', 'array'],
-            'categories.*.type' => ['required', 'array'],
+            'categories.*.name' => ['required', Rule::exists('categories', 'name')],
+            'categories.*.type' => ['required', new Enum(IncludeStatusEnum::class)],
             // devices
             'devices' => ['required', 'array'],
-            'devices.*.name' => ['required', new Enum(DeviceEnum::class)],
+            'devices.*.name' => ['required', Rule::exists('devices', 'name')],
             'devices.*.type' => ['required', 'in:Device'],
             // browsers
             'browsers' => ['required', 'array'],
-            'browsers.*.name' => ['required', new Enum(BrowserEnum::class)],
+            'browsers.*.name' => ['required', Rule::exists('devices', 'name')],
             'browsers.*.type' => ['required', 'in:Browser'],
             // locations
             'locations' => ['required', 'array'],
@@ -94,7 +102,7 @@ class CampaignService
             'locations.*.type' => ['required', new Enum(IncludeStatusEnum::class)],
             // websites
             'websites' => ['required', 'array'],
-            'websites.*.url' => ['required', 'string',],
+            'websites.*.url' => ['required', 'url',],
             'websites.*.type' => ['required', new Enum(IncludeStatusEnum::class)],
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Campaign;
 
 use App\Http\Controllers\Controller;
+use App\Models\Masters\CampaignType;
 use App\Services\CampaignService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,7 +30,6 @@ class CampaignController extends Controller
     public function store(Request $request, CampaignService $campaignService): JsonResponse
     {
         try {
-            DB::beginTransaction();
             $validator = Validator::make($request->all(), $campaignService->validation());
 
             if ($validator->fails()) {
@@ -37,11 +37,10 @@ class CampaignController extends Controller
             }
 
             $data = $campaignService->create($request->all());
-            DB::commit();
+            
             return $this->sendSuccess($data);
         } catch (Throwable $th) {
-            DB::rollBack();
-            return $this->sendError([]);
+            return $this->sendError(['message' => 'Internal Server Error.']);
         }
     }
 

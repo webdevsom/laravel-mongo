@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\SoftDeletes;
 
 class CampaignCategory extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $connection = 'mongodb';
 
@@ -15,5 +16,7 @@ class CampaignCategory extends Model
         'name',
         'type',
         'active_flag',
+        'created_at',
+        'updated_at',
     ];
 }

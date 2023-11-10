@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\SoftDeletes;
 
 class Campaign extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $connection = 'mongodb';
 
@@ -40,6 +41,8 @@ class Campaign extends Model
         'budget_currency' => 'string',
         'budget' => 'integer',
         'active_flag' => 'boolean',
+        'created_at',
+        'updated_at',
     ];
 
     public function audiences(): HasMany
@@ -54,7 +57,12 @@ class Campaign extends Model
 
     public function devices(): HasMany
     {
-        return $this->hasMany(CampaignDevice::class);
+        return $this->hasMany(CampaignDevice::class)->where('type', 'Device');
+    }
+
+    public function browsers(): HasMany
+    {
+        return $this->hasMany(CampaignDevice::class)->where('type', 'Browser');
     }
 
     public function locations(): HasMany
